@@ -20,5 +20,8 @@ router.get("/d/:token", limiter, downloadFile);
 router.get("/info/:token", fileInfo);
 
 router.get("/health", (req,res)=>res.send("OK"));
+router.get("/file/:token", downloadFile);
+
+
 
 module.exports = router;
