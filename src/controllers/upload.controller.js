@@ -18,7 +18,8 @@ exports.uploadFile = async (req, res) => {
       file.originalname
     );
 
-    const token = generateToken();
+    // ✅ Generate unique token based on filename
+    const token = await generateToken(file.originalname);
 
     // ✅ SAVE ORIGINAL NAME (NOT Telegram name)
     db.run(
@@ -27,22 +28,44 @@ exports.uploadFile = async (req, res) => {
       [
         token,
         tgFile.file_id,
-        file.originalname, // ⭐ FIX HERE
+        file.originalname,
         tgFile.file_size
-      ]
+      ],
+      (err) => {
+        // Delete temp upload first
+        try {
+          fs.unlinkSync(file.path);
+        } catch (unlinkErr) {
+          console.error("Error deleting temp file:", unlinkErr.message);
+        }
+
+        if (err) {
+          console.error("DATABASE ERROR:", err.message);
+          return res.status(500).json({
+            error: "Failed to save file info",
+            details: err.message
+          });
+        }
+
+        res.json({
+          success: true,
+          token,
+          download: `/api/file/${token}`
+        });
+      }
     );
-
-    // delete temp upload
-    fs.unlinkSync(file.path);
-
-    res.json({
-      success: true,
-      token,
-      download: `/file/${token}`
-    });
 
   } catch (e) {
     console.error("UPLOAD ERROR:", e.message);
+
+    // Clean up temp file on error
+    if (req.file && req.file.path) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkErr) {
+        console.error("Error deleting temp file:", unlinkErr.message);
+      }
+    }
 
     res.status(500).json({
       error: "Upload failed",

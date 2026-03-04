@@ -1,13 +1,13 @@
 const express = require("express");
 const multer = require("multer");
 
-
 const { uploadFile } = require("../controllers/upload.controller");
 const { downloadFile } = require("../controllers/download.controller");
 const { fileInfo } = require("../controllers/info.controller");
-const limiter = require("../middleware/ratelimit");
+const { uploadLimiter, downloadLimiter } = require("../middleware/ratelimit");
 
 const router = express.Router();
+
 const upload = multer({
   dest: "uploads/",
   limits: {
@@ -15,13 +15,19 @@ const upload = multer({
   }
 });
 
-router.post("/upload", upload.single("file"), uploadFile);
-router.get("/d/:token", limiter, downloadFile);
+// Upload file with rate limiting
+router.post("/upload", uploadLimiter, upload.single("file"), uploadFile);
+
+// Download file with lenient rate limiting
+router.get("/file/:token", downloadLimiter, downloadFile);
+
+// Legacy download route (optional)
+router.get("/d/:token", downloadLimiter, downloadFile);
+
+// File info
 router.get("/info/:token", fileInfo);
 
-router.get("/health", (req,res)=>res.send("OK"));
-router.get("/file/:token", downloadFile);
-
-
+// Health check
+router.get("/health", (req, res) => res.send("OK"));
 
 module.exports = router;
