@@ -1,12 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "$API_URL/api/$1"
+      "source": "/api/:path*",
+      "destination": "$API_URL/api/:path*"
     },
     {
-      "source": "/file/(.*)",
-      "destination": "$API_URL/file/$1"
+      "source": "/file/:path*",
+      "destination": "$API_URL/file/:path*"
     }
   ]
 }
