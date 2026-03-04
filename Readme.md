@@ -30,11 +30,7 @@ Files uploaded to the server are automatically stored inside a private Telegram 
 
 ---
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/bf439bc6-a4aa-4f97-afe8-81a2f49bafe5" width="45%" />
-  <img src="https://github.com/user-attachments/assets/5fced711-1c5c-4b41-925d-3a9a6caaeae3" width="45%" />
-</p>
-
+![TG Storage Engine](image-1.png) ![TG Storage Engine](image-2.png)
 
 
 ## ✨ Features
